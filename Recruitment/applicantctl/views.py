@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse
@@ -10,6 +10,7 @@ from django import forms
 from django.forms import modelformset_factory
 from django.db import connection
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 # Create your views here.
 @login_required 
@@ -121,7 +122,7 @@ def index(request):
     #print( context );
     return render(request, 'applicantctl/index.html', context)
 
-# @login_required 
+@login_required
 def add(request):
     #新規Formしか不要な場合
     formset = T_Applicant_infoCreateFormSet(request.POST or None, queryset=T_Applicant_info.objects.none())
@@ -149,7 +150,7 @@ def add(request):
     return render(request, 'applicantctl/add.html', context )
 
 
-#@login_required 
+@login_required 
 def upd(request, pk ):
     formset = T_Applicant_infoUpdateFormSet(request.POST or None, queryset=T_Applicant_info.objects.filter(key_applicant=pk))
 
@@ -163,31 +164,14 @@ def upd(request, pk ):
         'key_applicant': pk,
     }
     return render(request, 'applicantctl/upd.html', context )
-
-
-#class T_ApplicantinfoCreateView(CreateView):
-#    model = T_Applicant_info
-#    form_class = T_Applicant_infoForm
-#    template_name = 'applicantctl/add.html'
-#    success_url = "/"
-
-#@login_required 
 #
 # pk = 応募者情報.応募者情報キー
-#
+@login_required 
 def add_judgment(request, pk ):
 
     # 応募者情報キーを使って判定テーブルにデータが存在するか確認
     #
-    #formset = T_Applicant_infoUpdateFormSet(request.POST or None, queryset=T_Judgment.objects.filter(key_applicant=pk))
     formset = JudgmenAdd_CreateFormSet(request.POST or None, queryset=T_Judgment.objects.filter(key_applicant=pk))
-    #print( 'LEN=[%d]' % len(formset))
-
-        
-    #read_only = []
-    #if len(formset) > 0 :
-    #    read_only = ['1'] * len(formset)
-    #read_only.extend(['0','0','0','0'])
     message = ''
 
     if len(formset) < 3 :
@@ -196,8 +180,6 @@ def add_judgment(request, pk ):
         rformset = forms.modelformset_factory(T_Judgment, form=T_Judgment_Form, extra=(3-(len(formset))))
         formset = rformset(request.POST or None, queryset=T_Judgment.objects.filter(key_applicant=pk))
 
-
-    #print(formset.is_valid())
     if request.method == 'POST' and formset.is_valid():
         # DEBUG
         print( '保存じっこう')
@@ -243,51 +225,17 @@ def add_judgment(request, pk ):
     }
     return render(request, 'applicantctl/add/judgment.html', context )
 
-
-#@login_required 
-# 書類選考
-#
-# 既に作成されているT_Judgmentテーブルの更新を行う。
-#def upd_judgment(request, pk ):
-#    # 判定レコード取得
-#    #record = T_Judgment.objects.get(pk=pk)
-#    
-#    print( 'PK=%s' % pk )
-#
-#
-#    formset = JudgmentUpd_CreateFormSet(request.POST or None, queryset=T_Judgment.objects.get(pk=pk))
-#    #formset = JudgmentUpd_CreateFormSet(request.POST or None, queryset=T_Judgment.objects.filter(key_judgment=pk))
-#    print( str(formset))
-#
-#    if request.method == 'POST' and formset.is_valid():
-#        formset.save()
-#        return HttpResponseRedirect(reverse('applicantctl:index'))
-#
-#    #formset.set_readonly('key_applicant')
-#    #formset.set_readonly('key_department')
-#    
-#    context = {
-#        'formset' : formset,
-#    }
-#    
-#    
-#    #print( context )
-#    return render(request, 'applicantctl/upd/judgment.html', context )
-
-@login_required 
-def judgment(request, pk):
-    return HttpResponse("judgment %s" % pk)
-
-
+#####################################################
 # 更新画面
-class ItemUpdateView( UpdateView):
+class ItemUpdateView(LoginRequiredMixin, UpdateView):
     model = T_Judgment
     form_class = JudgmentUpd_Form
     template_name = "applicantctl/upd/judgment.html"
     #, args=(model.key_judgment,)
     success_url = reverse_lazy('applicantctl:index',)
 
+#####################################################
 # 応募情報削除
-class ItemDeleteView(DeleteView):
+class ItemDeleteView(LoginRequiredMixin, DeleteView):
     model = T_Applicant_info
     success_url = reverse_lazy('applicantctl:index',)

@@ -10,6 +10,7 @@ urlpatterns = [
     # ex: /
     path('', views.index, name='index'),
     path('list', views.index, name='index'),
+    path('index', views.index, name='index'),
  
     # ex: /add/
     path('add/', views.add, name='add'),

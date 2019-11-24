@@ -3,7 +3,7 @@ from applicantctl.models import M_Appl_Route, M_Work_History, M_Department, M_Ju
 
 # Register your models here.
 
-#ƒNƒ‰ƒXéŒ¾
+#ã‚¯ãƒ©ã‚¹å®£è¨€
 class M_Appl_RouteAdmin(admin.ModelAdmin):
 	pass
 class M_Work_HistoryAdmin(admin.ModelAdmin):
@@ -13,8 +13,8 @@ class M_DepartmentAdmin(admin.ModelAdmin):
 class M_JudgmentAdmin(admin.ModelAdmin):
 	pass
 
-admin.site.register(M_Appl_Route, M_Appl_RouteAdmin) #Œˆ‚Ü‚Á‚½‘‚«•û
-admin.site.register(M_Work_History, M_Work_HistoryAdmin) #Œˆ‚Ü‚Á‚½‘‚«•û
-admin.site.register(M_Department, M_DepartmentAdmin) #Œˆ‚Ü‚Á‚½‘‚«•û
-admin.site.register(M_Judgment, M_JudgmentAdmin) #Œˆ‚Ü‚Á‚½‘‚«•û
+admin.site.register(M_Appl_Route, M_Appl_RouteAdmin) #æ±ºã¾ã£ãŸæ›¸ãæ–¹
+admin.site.register(M_Work_History, M_Work_HistoryAdmin) #æ±ºã¾ã£ãŸæ›¸ãæ–¹
+admin.site.register(M_Department, M_DepartmentAdmin) #æ±ºã¾ã£ãŸæ›¸ãæ–¹
+admin.site.register(M_Judgment, M_JudgmentAdmin) #æ±ºã¾ã£ãŸæ›¸ãæ–¹
 
