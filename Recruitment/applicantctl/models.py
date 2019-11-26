@@ -68,7 +68,7 @@ class T_Applicant_info(models.Model):
     applicant_date = models.DateField(verbose_name='応募日')
     #応募経路KEY
     # key_appl_route = models.IntegerField(null=True,verbose_name='応募経路')
-    key_appl_route = models.ForeignKey(M_Appl_Route, null=True, on_delete=models.PROTECT)
+    key_appl_route = models.ForeignKey(M_Appl_Route, null=True, on_delete=models.PROTECT, verbose_name='応募経路')
 
     #応募者№
     applicant_no = models.CharField(max_length=20, verbose_name='応募者No')
