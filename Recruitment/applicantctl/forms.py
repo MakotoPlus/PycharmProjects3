@@ -38,7 +38,6 @@ class SearchForm(forms.Form):
     
     def _init_(self, permission=None, *args, **kwargs ):
         super(SearchForm, self).__init__(*args,**kwargs)
-        self.fields['m_appl_route'] = 'Tst'
     
     #def get_m_appl_route(self, permission):
     #    return M_Appl_Route.objects.all()

@@ -17,67 +17,29 @@ from django.http import HttpResponseRedirect
 @login_required 
 def index(request):
 
+    #workout = code_that_fetches_instance()
     forms = SearchFormSet(request.GET or None)
-
-    """
-    GETパラメータのキー内容について。
-    ページング処理のパラメータ 'page'
-    検索絞込み条件の'm_work_history','m_appl_route'の情報は
-    'form-0-m_appl_route','form_0-m_work_history'というキー値となっているので
-    存在するかの確認は、完全一致ではなく部分一致で確認する
-    キーが存在した場合は、isValid実施後にSQLのWhere句を生成する。
-    
-    """
+    #print( forms )
 
     whereSql = ''
-    
-    #
-    # パラメータに検索条件があるかチェックする
-    # Request.GETからパラメータをリストに保存(lists)
-    # タプルの中にタプルが格納されているので二重ループで、キー名の文字列が含まれているパラメータキーが存在するか
-    # チェックし存在したらフラグをTrueに設定する。
-    # １つあったらそれで十分なのでループを抜ける
-    lists = request.GET.lists()
-    is_m_appl_route_key = False     #検索条件パラメータ存在有無フラグ
-    is_m_work_history_key = False   #検索条件パラメータ存在有無フラグ
-    for tupls in lists:
-        for key in tupls:
-            if 'm_work_history' in key:
-                is_m_work_history_key = True
-                break
-            elif 'm_appl_route' in key:
-                is_m_appl_route_key = True
-                break
-        #どちらかのフラグがTrueとなったら終わり
-        if is_m_appl_route_key or is_m_appl_route_key:
-            break
-
-    #
-    # 1. パラメータに検索条件があったらSQL文のWHERE句を生成する。
-    # 2. 検索パラメータが正常に作成されていない場合は下記エラーとなるため、新規にFormを生成する。
-    #   「マネージメントフォームのデータが見つからないか、改竄されています。」
-    #    これは検索条件なしでページ遷移パラメータが存在している場合に発生する。
-    #
-    if is_m_work_history_key or is_m_appl_route_key:
-        if forms.is_valid() == True:
-            for form in forms:
-                if form.cleaned_data.get('m_appl_route'):
-                    #print( 'm_appl_route=' + str(type(form.cleaned_data.get('m_appl_route'))))
-                    whereSql = ' WHERE M_Appl_Route.key_appl_route =\'' + str(form.cleaned_data.get('m_appl_route').key_appl_route) + '\' '
-                
-                if form.cleaned_data.get('m_work_history'):
-                    if whereSql:
-                        whereSql = whereSql + ' AND '
-                    else:
-                        whereSql = ' WHERE '
-                    whereSql = whereSql + 'M_Work_History.key_history_kbn=\'' + str(form.cleaned_data.get('m_work_history').key_history_kbn) + '\''
-            #print( 'WHERE=[' + whereSql + ']' )
-        else:
-            #ありえないけと念のため
-            forms = SearchFormSet(None)
-    else:
-        forms = SearchFormSet(None)
-
+    if request.method == 'GET':
+        #form = SearchFormSet(request.POST)
+        #print( 'WHERE=' + str(request ))
+        forms.is_valid()
+        for form in forms:
+            #print(form.as_table())
+            #print( form )
+            if form.cleaned_data.get('m_appl_route'):
+                #print( 'm_appl_route=' + str(type(form.cleaned_data.get('m_appl_route'))))
+                whereSql = ' WHERE M_Appl_Route.key_appl_route =\'' + str(form.cleaned_data.get('m_appl_route').key_appl_route) + '\' '
+            
+            if form.cleaned_data.get('m_work_history'):
+                if whereSql:
+                    whereSql = whereSql + ' AND '
+                else:
+                    whereSql = ' WHERE '
+                whereSql = whereSql + 'M_Work_History.key_history_kbn=\'' + str(form.cleaned_data.get('m_work_history').key_history_kbn) + '\''
+        #print( 'WHERE=[' + whereSql + ']' )
     cursor = connection.cursor()
     sSql = '''
         select 
@@ -144,13 +106,15 @@ def index(request):
                 )
             '''
     sSql = sSql + whereSql
-    sSql = sSql + ' ORDER BY applicant_date'
+    sSql = sSql + '''
+                    ORDER BY applicant_date
+                  '''
 
 
     #print( sSql )
     cursor.execute(sSql)
     rows = cursor.fetchall()
-    page_obj = paginate_queryset( request, rows, 10 )
+    page_obj = paginate_queryset( request, rows, 3 )
 
     #print( '-------------------------------------------------------------------' )
     #print( forms )
@@ -158,6 +122,7 @@ def index(request):
         'forms' : forms,
          'list' : page_obj.object_list,
         'page_obj' : page_obj,
+#        'list' : rows,
     }
     #print( context );
     return render(request, 'applicantctl/index.html', context)
@@ -186,6 +151,24 @@ def paginate_queryset(request, queryset, count):
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
     return page_obj
+
+
+@login_required 
+def index2(request):
+
+    #応募者リスト取得
+    list_Applicant_info = T_Applicant_info.objects.order_by('key_applicant')
+    page_obj = paginate_queryset( request, list_Applicant_info, 2 )
+    
+    print( page_obj )
+    print( type(page_obj.object_list ))
+    print( page_obj.object_list )
+    context = {
+        'list' : page_obj.object_list,
+        'page_obj' : page_obj,
+    }
+    return render(request, 'applicantctl/index2.html', context)
+
 
 @login_required
 def add(request):

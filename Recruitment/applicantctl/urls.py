@@ -12,6 +12,7 @@ urlpatterns = [
     path('list', views.index, name='index'),
     path('index', views.index, name='index'),
  
+
     # ex: /add/
     path('add/', views.add, name='add'),
     #url(r'^create$', T_ApplicantinfoCreateView.as_view()),

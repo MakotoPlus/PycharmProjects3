@@ -3,9 +3,9 @@
 {% block content %}
 {{ message }}
 
-<form action ={% url 'applicantctl:index' %} method="POST" >
+<form action ={% url 'applicantctl:index' %} method="GET" >
 </form>
-<form action="" method="POST" >
+<form action="" method="GET" >
 		<table>
 			<tr>
 			{% for field in forms %}
@@ -91,5 +91,16 @@
         {% endfor %}
       </tbody>
     </table>
+    </br>
+    {% load custom_tags %}
+    <center>
+    {% if page_obj.has_previous %}
+     <a href="?{% query_string request page_obj.previous_page_number %}">前へ</a>
+    {% endif %}
+    {{ page_obj.number }}/{{ page_obj.paginator.num_pages }}
+	{% if page_obj.has_next %}
+        <a href="?{% query_string request page_obj.next_page_number %}">次へ</a>
+    {% endif %}
+    </center>
 {% endblock %}
 
