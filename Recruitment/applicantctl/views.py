@@ -171,7 +171,7 @@ def paginate_queryset(request, queryset, count):
     返却するPgaeオブジェクトは、以下のような感じで使えます。::
 
         {% if page_obj.has_previous %}
-          <a href="?page={{ page_obj.previous_page_number }}">Prev</a>
+          <a href="?{% query_string request page_obj.previous_page_number %}">前へ</a>
         {% endif %}
 
     また、page_obj.object_list で、count件数分の絞り込まれたquerysetが取得できます。
