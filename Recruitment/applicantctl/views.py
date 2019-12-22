@@ -12,11 +12,19 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import connection
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
+from .util.logger import logger
+import logging
+
+
+log = logging.getLogger(__name__)
+
 
 # Create your views here.
+@logger(func_name="index")
 @login_required 
 def index(request):
 
+    log.info('index start')
     forms = SearchFormSet(request.GET or None)
 
     """
@@ -147,7 +155,7 @@ def index(request):
     sSql = sSql + ' ORDER BY applicant_date'
 
 
-    #print( sSql )
+    log.info('SQL=' + sSql.replace('\r\n', '').replace('\n', '').replace('  ', ' '))
     cursor.execute(sSql)
     rows = cursor.fetchall()
     page_obj = paginate_queryset( request, rows, 10 )
@@ -160,22 +168,18 @@ def index(request):
         'page_obj' : page_obj,
     }
     #print( context );
+    #log.info('index end')
     return render(request, 'applicantctl/index.html', context)
 
 def paginate_queryset(request, queryset, count):
     """Pageオブジェクトを返す。
-
     ページングしたい場合に利用してください。
-
     countは、1ページに表示する件数です。
     返却するPgaeオブジェクトは、以下のような感じで使えます。::
-
         {% if page_obj.has_previous %}
           <a href="?{% query_string request page_obj.previous_page_number %}">前へ</a>
         {% endif %}
-
     また、page_obj.object_list で、count件数分の絞り込まれたquerysetが取得できます。
-
     """
     paginator = Paginator(queryset, count)
     page = request.GET.get('page')
