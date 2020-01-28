@@ -125,11 +125,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'C:\PycharmProjects3\static'
+STATIC_ROOT = 'C:/PycharmProjects3/static'
 
 
 # ログイン時のリダイレクトURL
-LOGIN_REDIRECT_URL ='/applicantctl/'
+#LOGIN_REDIRECT_URL ='/applicantctl/'
+# ログアウト時のリダイレクトURL
+LOGOUT_REDIRECT_URL ='/accounts/login'
 
 #日付フォーマット
 DATE_INPUT_FORMATS = ('%Y/%m/%d','%Y-%m-%d')
@@ -180,7 +182,7 @@ LOGGING = {
             'level': 'INFO',
             #'class': 'logging.FileHandler',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': 'C:\PycharmProjects3\Recruitment\Logs\Django_info.log',
+            'filename': r'C:\PycharmProjects3\Recruitment\Logs\Django_info.log',
             'formatter': 'verbose',
             'when':'D',
             'interval':1,
@@ -189,7 +191,7 @@ LOGGING = {
             'level': 'DEBUG',
             #'class': 'logging.FileHandler',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': 'C:\PycharmProjects3\Recruitment\Logs\Django_debug.log',
+            'filename': r'C:\PycharmProjects3\Recruitment\Logs\Django_debug.log',
             'formatter': 'verbose',
             'when':'D',
             'interval':1,
@@ -209,3 +211,20 @@ LOGGING = {
     #},
     
 }
+
+
+# メール送信設定
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_LOCALTIME = False
+EMAIL_HOST_USER = 'fukupeemail@gmail.com'
+EMAIL_HOST_PASSWORD = 'mag@Probe777'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_SSL_CERTFILE = None
+EMAIL_SSL_KEYFILE = None
+EMAIL_TIMEOUT = None
+DEFAULT_FROM_EMAIL = 'fukupeemail@gmail.com'
+SERVER_EMAIL = 'fukupeemail@gmail.com'
